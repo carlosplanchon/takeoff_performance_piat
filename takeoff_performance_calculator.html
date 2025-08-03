@@ -77,6 +77,7 @@
                     <div class="mb-6 md:col-span-2"><label for="runwayLength" class="block font-semibold mb-2" x-text="t('runway_length_label_long')"></label><div class="flex items-center"><input type="number" id="runwayLength" x-model.number="runwayLength" class="w-full p-2 border border-gray-300 rounded-md"><span class="ml-2 font-semibold text-gray-600" x-text="units === 'metric' ? 'm' : 'ft'"></span></div></div>
                 </div>
                 
+                <!-- Input sections with number fields -->
                 <div class="mb-6">
                     <label class="block font-semibold mb-2" x-text="t('elevation_label')"></label>
                     <input type="range" x-model.number="elevation_ft" min="0" max="5000" step="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
@@ -164,6 +165,7 @@
         <footer class="text-center mt-8 text-sm text-gray-500">
             <p x-text="t('footer_disclaimer1')"></p>
             <p x-text="t('footer_disclaimer2')"></p>
+            <p x-text="t('footer_disclaimer3')"></p>
             <p x-text="t('footer_copyright')"></p>
             <p x-text="t('footer_hosting')"></p>
         </footer>
@@ -218,6 +220,7 @@
                         breakdown_total: 'TOTAL REQUERIDO:',
                         footer_disclaimer1: 'Esta calculadora es una herramienta de demostración basada en el POH del Pipistrel ALPHA Trainer LSA. No debe usarse para planificación de vuelo real.',
                         footer_disclaimer2: 'Consulte siempre el Manual de Operación del Piloto (POH) oficial de su avión.',
+                        footer_disclaimer3: 'Cualquier pregunta sobre la aplicación de estos cálculos o el uso de esta herramienta en un contexto de instrucción debe ser dirigida a un Instructor de Vuelo Certificado (CFI).',
                         footer_copyright: 'Copyright © 2025 Carlos A. Planchón - Código bajo licencia MIT.',
                         footer_hosting: 'Hosteado on-premise en Dolores, Soriano, Uruguay ♥️.'
                     },
@@ -264,6 +267,7 @@
                         breakdown_total: 'TOTAL REQUIRED:',
                         footer_disclaimer1: 'This calculator is a demonstration tool based on the Pipistrel ALPHA Trainer LSA POH. It should not be used for actual flight planning.',
                         footer_disclaimer2: 'Always consult the official Pilot\'s Operating Handbook (POH) for your aircraft.',
+                        footer_disclaimer3: 'Any questions regarding the application of these calculations or the use of this tool in a training context should be directed to a qualified Certified Flight Instructor (CFI).',
                         footer_copyright: 'Copyright © 2025 Carlos A. Planchón - Code under MIT license.',
                         footer_hosting: 'Hosted on-premise in Dolores, Soriano, Uruguay ♥️.'
                     }
@@ -398,7 +402,8 @@
 
                     // 5) Surface and cross‑wind factors -----------------------------------
                     this.breakdown.surfaceFactor   = this.runwaySurface === 'grass' ? 1.20 : 1.0;
-                    this.breakdown.crosswindFactor = 1.0 + (Math.floor(this.crosswind_kts / 5) * 0.10);
+                    // this.breakdown.crosswindFactor = 1.0 + (Math.floor(this.crosswind_kts / 5) * 0.10);
+                    this.breakdown.crosswindFactor = 1.0 + (Math.ceil(this.crosswind_kts) * (0.10 / 5));
                     console.log(`Surface factor (${this.runwaySurface}): ×${this.breakdown.surfaceFactor}`);
                     console.log(`Cross‑wind factor (${this.crosswind_kts} kt): ` +
                                 `×${this.breakdown.crosswindFactor}`);
