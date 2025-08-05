@@ -94,7 +94,7 @@
                 </div>
                 <div class="mb-6">
                     <label class="block font-semibold mb-2" x-text="t('temperature_label')"></label>
-                    <input type="range" x-model.number="temperature_c" min="-10" max="45" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <input type="range" x-model.number="temperature_c" min="0" max="45" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                     <div class="flex items-center justify-center mt-2 space-x-2">
                         <input type="number" x-model.number="temperature_display" class="w-24 p-1 text-center font-medium border border-gray-300 rounded-md">
                         <span class="font-semibold text-gray-600 w-4" x-text="units === 'metric' ? '°C' : '°F'"></span>
@@ -102,10 +102,10 @@
                 </div>
                 <div class="mb-6">
                     <label class="block font-semibold mb-2" x-text="t('wind_label')"></label>
-                    <input type="range" x-model.number="wind_kts" min="-6" max="12" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <input type="range" x-model.number="wind_kts" min="-20" max="30" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                     <div class="text-center mt-2 text-lg font-medium"><span x-show="wind_kts > 0" x-text="t('wind_headwind', {speed: wind_kts})"></span><span x-show="wind_kts < 0" x-text="t('wind_tailwind', {speed: Math.abs(wind_kts)})"></span><span x-show="wind_kts == 0" x-text="t('wind_calm')"></span></div>
                     <div class="flex items-center justify-center mt-2 space-x-2">
-                        <input type="number" x-model.number="wind_kts" min="-6" max="12" step="1" class="w-24 p-1 text-center font-medium border border-gray-300 rounded-md">
+                        <input type="number" x-model.number="wind_kts" min="-20" max="30" step="1" class="w-24 p-1 text-center font-medium border border-gray-300 rounded-md">
                         <span class="font-semibold text-gray-600 w-8">kts</span>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                     <input type="range" x-model.number="crosswind_kts" min="0" max="20" step="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                     <div class="flex items-center justify-center mt-2 space-x-2">
                         <input type="number" x-model.number="crosswind_kts" min="0" max="20" step="1" class="w-24 p-1 text-center font-medium border border-gray-300 rounded-md">
-                         <span class="font-semibold text-gray-600 w-8">kts</span>
+                        <span class="font-semibold text-gray-600 w-8">kts</span>
                     </div>
                 </div>
                 
@@ -362,10 +362,50 @@
 
                 // --- METHODS ---
                 init() {
-                    // This function is called by Alpine.js when the component is initialized.
-                    // We just need to run the initial calculation.
+                    // Ejecuta el cálculo inicial al cargar la página.
                     this.calculate();
+
+                    // Ahora, observa todas las propiedades de entrada. Si alguna cambia,
+                    // vuelve a ejecutar el cálculo automáticamente.
+                    const watchedProps = [
+                        'elevation_ft', 
+                        'temperature_c', 
+                        'wind_kts', 
+                        'crosswind_kts', 
+                        'runwaySurface', 
+                        'runwayLength_m', 
+                        'units'
+                    ];
+                    
+                    watchedProps.forEach(prop => {
+                        this.$watch(prop, () => this.calculate());
+                    });
                 },
+
+                init() {
+                    // Ejecuta el cálculo inicial al cargar la página. Esto funciona en ambos entornos.
+                    this.calculate();
+
+                    // --- CORRECCIÓN ---
+                    // Solo configura los watchers si la función mágica $watch existe.
+                    // Esto solo será cierto cuando Alpine.js inicialice el componente.
+                    if (typeof this.$watch === 'function') {
+                        const watchedProps = [
+                            'elevation_ft', 
+                            'temperature_c', 
+                            'wind_kts', 
+                            'crosswind_kts', 
+                            'runwaySurface', 
+                            'runwayLength_m', 
+                            'units'
+                        ];
+                        
+                        watchedProps.forEach(prop => {
+                            this.$watch(prop, () => this.calculate());
+                        });
+                    }
+                },
+
                 // Translation helper function
                 t(key, replacements = {}) {
                     let text = this.translations[this.lang]?.[key] || key;
